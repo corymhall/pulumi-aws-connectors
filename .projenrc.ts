@@ -1,5 +1,6 @@
 import { JsonPatch, typescript } from 'projen';
 import { NodePackageManager, Transform } from 'projen/lib/javascript';
+import { ProfilesGenerator } from './projenrc';
 const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
   name: 'pulumi-serverless-connectors',
@@ -48,5 +49,7 @@ jestConfig?.patch(
     '^.+\\.(t|j)sx?$': new Transform('@swc/jest'),
   }),
 );
+
+new ProfilesGenerator(project, 'generator');
 
 project.synth();

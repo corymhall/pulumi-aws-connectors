@@ -1,14 +1,12 @@
 import { Project, SourceCode } from 'projen';
 import { Policy } from './profiles';
 
-export interface SourceCodeInfo {
-  sourceModule: string;
+export interface CodeInfo {
   sourceResource: string;
+  sourceModule: string;
   destModule: string;
   destResource: string;
   componentNamePrefix: string;
-  access: 'Read' | 'Write' | 'ReadWrite';
-  statement?: Policy;
 }
 
 export class Code extends SourceCode {
@@ -16,19 +14,21 @@ export class Code extends SourceCode {
     project: Project,
     filePath: string,
     componentName: string,
-    info: SourceCodeInfo,
+    info: CodeInfo,
   ) {
     super(project, filePath);
     if (this.marker) {
       this.line(`// ${this.marker}`);
     }
-    this.line(`import * as pulumi from '@pulumi/pulumi';`);
     this.line(`import * as aws from '@pulumi/aws';`);
+    this.line(`import * as pulumi from '@pulumi/pulumi';`);
     this.line();
     this.open(`export interface ${componentName}Args {`);
-    this.line(this.getArgLine('source', info.sourceResource));
+    this.line(
+      this.getArgLine('source', info.sourceModule, info.sourceResource),
+    );
     this.line();
-    this.line(this.getArgLine('target', info.destResource));
+    this.line(this.getArgLine('target', info.destModule, info.destResource));
     this.line();
     this.close('}');
     this.line();
@@ -42,38 +42,38 @@ export class Code extends SourceCode {
     this.line(
       `super('aws-connectors:index:${componentName}', name, args, opts);`,
     );
-
-    this.open('new aws.iam.RolePolicy(`${name}-policy`, {');
-    this.line('role: args.target.role,');
-
-    this.open('policy: {');
-    this.line("Version: '2012-10-17',");
-    this.open('Statement: [');
-    if (info.statement) {
-      this.writePolicy(this, info, info.statement);
-    }
-
-    this.close('});');
-
-    this.line('this.registerOutputs({});');
-    this.close('}');
   }
 
-  private writePolicy(src: SourceCode, info: SourceCodeInfo, policy: Policy) {
+  protected writePolicy(src: SourceCode, info: CodeInfo, policy: Policy) {
     for (const statement of policy.Statement) {
+      const action = Array.isArray(statement.Action)
+        ? statement.Action
+        : [statement.Action];
+      const resources = Array.isArray(statement.Resource)
+        ? statement.Resource
+        : [statement.Resource];
       src.open('{');
       src.line(`Effect: '${statement.Effect}',`);
-      src.line(
-        `Action: ${Array.isArray(statement.Action) ? statement.Action.join(', ') : statement.Action},`,
-      );
-      src.line(
-        `Resource: ${Array.isArray(statement.Resource) ? statement.Resource.join(', ') : statement.Resource},`.replace(
-          /%{(\w+)\.(\w+)}/g,
-          (_match, type, attr) => {
-            return this.getInterpolateString(info, type, attr);
-          },
-        ),
-      );
+      src.open('Action: [');
+      action.forEach((a) => src.line(`'${a}',`));
+      src.close('],');
+      src.open('Resource: [');
+      resources.forEach((res) => {
+        const match = res.match(/%{(\w+)\.(\w+)}/);
+        if (!match) {
+          src.line(`'${res}',`);
+        } else {
+          src.line(
+            `pulumi.interpolate\`${res}\`,`.replace(
+              /%{(\w+)\.(\w+)}/g,
+              (_, type, attr) => {
+                return `\${${this.getInterpolateString(info, type, attr)}}`;
+              },
+            ),
+          );
+        }
+      });
+      src.close('],');
       if (statement.Principal) {
         src.open('Principal: {');
         src.line(`Service: '${statement.Principal.Service}',`);
@@ -83,7 +83,7 @@ export class Code extends SourceCode {
         src.open('Condition: {');
         src.open('ArnEquals: {');
         src.line(
-          `'aws:SourceArn': '${statement.Condition.ArnEquals['aws:SourceArn']}',`,
+          `'aws:SourceArn': ${this.getInterpolateString(info, 'Source', 'Arn')},`,
         );
         src.close('},');
         src.close('},');
@@ -91,36 +91,52 @@ export class Code extends SourceCode {
       src.close('},');
     }
   }
-  private getInterpolateString(
-    info: SourceCodeInfo,
+
+  protected closeCode(): void {
+    this.line('this.registerOutputs({});');
+    this.close('}');
+    this.close('}');
+  }
+  protected getInterpolateString(
+    info: CodeInfo,
     referenceType: string,
     attribute: string,
   ): string {
     if (referenceType === 'Source') {
-      return `pulumi.interpolate\`\${args.source.${this.getReference(info.sourceResource, attribute)}}\``;
+      return `\args.source.${this.getReference(info.sourceResource, attribute)}`;
     }
-    return `pulumi.interpolate\`\${args.target.${this.getReference(info.destResource, attribute)}}\``;
+    return `\args.target.${this.getReference(info.destResource, attribute)}`;
   }
 
-  private getReference(resourceType: string, attribute: string): string {
-    switch (resourceType) {
-      case 'Function':
-        switch (attribute) {
-          case 'Arn':
+  protected getReference(resourceType: string, attribute: string): string {
+    switch (attribute) {
+      case 'Arn':
+        switch (resourceType) {
+          case 'Function':
             return 'arn';
           default:
-            throw new Error(`Unsupported attribute: ${attribute}`);
+            return 'arn';
         }
       default:
-        throw new Error(`Unsupported type: ${resourceType}`);
+        return attribute.toLowerCase();
     }
   }
-  private getArgLine(typ: string, resourceType: string): string {
+  protected getArgLine(
+    typ: string,
+    module: string,
+    resourceType: string,
+  ): string {
     switch (resourceType) {
       case 'Function':
         return `${typ}: aws.lambda.Function;`;
+      case 'StateMachine':
+        return `${typ}: aws.sfn.StateMachine;`;
+      case 'Rule':
+        return `${typ}: aws.cloudwatch.EventRule;`;
+      case 'EventBus':
+        return `${typ}: aws.cloudwatch.EventBus;`;
       default:
-        throw new Error(`Unsupported type: ${resourceType}`);
+        return `${typ}: aws.${module.toLowerCase()}.${resourceType};`;
     }
   }
 }
