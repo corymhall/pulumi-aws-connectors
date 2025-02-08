@@ -1,4 +1,4 @@
-import { Policy } from './profiles';
+import { LambdaPermission, Policy } from './profiles';
 export interface IConnectorInfo {
   sourceModule: string;
   sourcePolicy: boolean;
@@ -9,4 +9,5 @@ export interface IConnectorInfo {
   componentName: string;
   readStatement?: Policy;
   writeStatement?: Policy;
+  lambdaPermission?: LambdaPermission;
 }

@@ -35,7 +35,7 @@ export class LambdaFunctionToStepFunctionsStateMachineConnectorReadWrite extends
               'states:GetExecutionHistory',
             ],
             Resource: [
-              pulumi.interpolate`arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:execution:${args.target.name}:*`,
+              pulumi.interpolate`arn:${aws.getPartitionOutput().partition}:states:${aws.getRegionOutput().name}:${aws.getCallerIdentityOutput().accountId}:execution:${args.target.name}:*`,
             ],
           },
         ],

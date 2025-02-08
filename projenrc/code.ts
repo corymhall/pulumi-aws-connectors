@@ -15,6 +15,7 @@ export class Code extends SourceCode {
     filePath: string,
     componentName: string,
     info: CodeInfo,
+    additionalArgs?: string[],
   ) {
     super(project, filePath);
     if (this.marker) {
@@ -30,6 +31,9 @@ export class Code extends SourceCode {
     this.line();
     this.line(this.getArgLine('target', info.destModule, info.destResource));
     this.line();
+    if (additionalArgs) {
+      additionalArgs.forEach((arg) => this.line(arg));
+    }
     this.close('}');
     this.line();
 
@@ -63,14 +67,8 @@ export class Code extends SourceCode {
         if (!match) {
           src.line(`'${res}',`);
         } else {
-          src.line(
-            `pulumi.interpolate\`${res}\`,`.replace(
-              /%{(\w+)\.(\w+)}/g,
-              (_, type, attr) => {
-                return `\${${this.getInterpolateString(info, type, attr)}}`;
-              },
-            ),
-          );
+          // TODO: if the match matches the whole string, we can use the match directly
+          src.line(this.replace(`pulumi.interpolate\`${res}\`,`, info));
         }
       });
       src.close('],');
@@ -97,23 +95,40 @@ export class Code extends SourceCode {
     this.close('}');
     this.close('}');
   }
+
+  protected replace(str: string, info: CodeInfo): string {
+    return str
+      .replace(/%{(\w+)\.(\w+)}/g, (_, type, attr) => {
+        if (attr === 'Qualifier') {
+          return '${qualifier}';
+        }
+        return `\${${this.getInterpolateString(info, type, attr)}}`;
+      })
+      .replace('AWS::AccountId', 'aws.getCallerIdentityOutput().accountId')
+      .replace('AWS::Region', 'aws.getRegionOutput().name')
+      .replace('AWS::Partition', 'aws.getPartitionOutput().partition');
+  }
   protected getInterpolateString(
     info: CodeInfo,
     referenceType: string,
     attribute: string,
   ): string {
     if (referenceType === 'Source') {
-      return `\args.source.${this.getReference(info.sourceResource, attribute)}`;
+      return `args.source.${this.getReference(info.sourceResource, attribute)}`;
     }
-    return `\args.target.${this.getReference(info.destResource, attribute)}`;
+    return `args.target.${this.getReference(info.destResource, attribute)}`;
   }
 
   protected getReference(resourceType: string, attribute: string): string {
     switch (attribute) {
+      case 'ResourceId':
+        return 'id';
       case 'Arn':
         switch (resourceType) {
           case 'Function':
             return 'arn';
+          case 'PlaceIndex':
+            return 'indexArn';
           default:
             return 'arn';
         }

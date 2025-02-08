@@ -27,7 +27,7 @@ export class LambdaFunctionToLocationPlaceIndexConnectorReadWrite extends pulumi
               'geo:SearchPlaceIndexForText',
             ],
             Resource: [
-              pulumi.interpolate`${args.target.arn}`,
+              pulumi.interpolate`${args.target.indexArn}`,
             ],
           },
         ],

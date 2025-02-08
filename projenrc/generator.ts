@@ -1,14 +1,17 @@
 import { Construct } from 'constructs';
 import { Project } from 'projen';
 import { generateIamPolicyConnector } from './iam-policy-connector';
+import { generateLambdaPermissionPolicyConnector } from './lambda-permission-connector';
 import {
   ConnectorProfiles,
   DestinationConfig,
+  LambdaPermission,
   parseProfiles,
   Policy,
 } from './profiles';
-import { IConnectorInfo } from './types';
 import { generateSnsTopicPolicyConnector } from './sns-topic-policy-connector';
+import { generateSqsQueuePolicyConnector } from './sqs-queue-policy-connector';
+import { IConnectorInfo } from './types';
 
 export class ProfilesGenerator extends Construct {
   private profiles: ConnectorProfiles;
@@ -23,15 +26,19 @@ export class ProfilesGenerator extends Construct {
       for (const [destType, destConfig] of Object.entries(sourceConfig)) {
         if (
           // TODO: need to figure out how to create the event source mapping which requires extra props
-          destConfig.Properties.DependedBy !==
+          destConfig.Properties.DependedBy ===
           'DESTINATION_EVENT_SOURCE_MAPPING'
         ) {
-          new ConnectorInfo(this, `${sourceType}-${destType}`, {
-            destinationConfig: destConfig,
-            destinationType: destType,
-            sourceType: sourceType,
-          });
+          console.log(
+            `Skipping ${sourceType}-${destType} due to DESTINATION_EVENT_SOURCE_MAPPING`,
+          );
+          continue;
         }
+        new ConnectorInfo(this, `${sourceType}-${destType}`, {
+          destinationConfig: destConfig,
+          destinationType: destType,
+          sourceType: sourceType,
+        });
       }
     }
   }
@@ -52,6 +59,7 @@ export class ConnectorInfo extends Construct implements IConnectorInfo {
   public componentName: string;
   public readStatement?: Policy;
   public writeStatement?: Policy;
+  public lambdaPermission?: LambdaPermission;
   public sourcePolicy: boolean;
   private readonly project: Project;
   constructor(scope: Construct, id: string, props: ProfileGeneratorProps) {
@@ -66,22 +74,27 @@ export class ConnectorInfo extends Construct implements IConnectorInfo {
     this.destResource = props.destinationType.split('::')[2];
     this.componentName = `${this.sourceModule}${this.sourceResource}To${this.destModule}${this.destResource}`;
     console.log('Component Name: ', this.componentName);
+    const ac = props.destinationConfig.Properties.AccessCategories;
 
-    if ('Read' in props.destinationConfig.Properties.AccessCategories) {
-      this.readStatement =
-        props.destinationConfig.Properties.AccessCategories.Read;
+    if ('Read' in ac) {
+      this.readStatement = ac.Read as Policy;
     }
-    if ('Write' in props.destinationConfig.Properties.AccessCategories) {
-      this.writeStatement =
-        props.destinationConfig.Properties.AccessCategories.Write;
+    if ('Write' in ac) {
+      if ('Statement' in ac.Write) {
+        this.writeStatement = ac.Write as Policy;
+      } else {
+        this.lambdaPermission = ac.Write as LambdaPermission;
+      }
     }
     switch (this.connectorType) {
       case 'AWS_SNS_TOPIC_POLICY':
         generateSnsTopicPolicyConnector(this.project, this);
         break;
       case 'AWS_SQS_QUEUE_POLICY':
+        generateSqsQueuePolicyConnector(this.project, this);
         break;
       case 'AWS_LAMBDA_PERMISSION':
+        generateLambdaPermissionPolicyConnector(this.project, this);
         break;
       case 'AWS_IAM_ROLE_MANAGED_POLICY':
         generateIamPolicyConnector(this.project, this);

@@ -6,6 +6,7 @@ const project = new typescript.TypeScriptProject({
   name: 'pulumi-serverless-connectors',
   projenrcTs: true,
   release: false,
+  entrypoint: 'src/index.ts',
   githubOptions: {
     mergify: false,
     workflows: false,

@@ -15,6 +15,13 @@ export interface Policy {
   }[];
 }
 
+export interface LambdaPermission {
+  Action: string;
+  Principal: string;
+  SourceArn: string;
+  SourceAccount?: string;
+}
+
 export interface DestinationConfig {
   Type: string;
   Properties: {
@@ -22,7 +29,7 @@ export interface DestinationConfig {
     DependedBy?: string;
     ValidAccessCategories?: string[][];
     AccessCategories: {
-      [key: string]: Policy;
+      [key: string]: Policy | LambdaPermission;
     };
   };
 }

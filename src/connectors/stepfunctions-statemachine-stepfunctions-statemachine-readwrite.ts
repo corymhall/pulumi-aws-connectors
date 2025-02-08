@@ -23,7 +23,7 @@ export class StepFunctionsStateMachineToStepFunctionsStateMachineConnectorReadWr
               'states:DescribeExecution',
             ],
             Resource: [
-              pulumi.interpolate`arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:execution:${args.target.name}:*`,
+              pulumi.interpolate`arn:${aws.getPartitionOutput().partition}:states:${aws.getRegionOutput().name}:${aws.getCallerIdentityOutput().accountId}:execution:${args.target.name}:*`,
             ],
           },
           {
