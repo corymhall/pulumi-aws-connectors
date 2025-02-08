@@ -1,5 +1,5 @@
 {
-  "name": "pulumi-serverless-connectors",
+  "name": "pulumi-aws-connectors",
   "scripts": {
     "build": "npx projen build",
     "clobber": "npx projen clobber",

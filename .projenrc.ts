@@ -3,7 +3,7 @@ import { NodePackageManager, Transform } from 'projen/lib/javascript';
 import { ProfilesGenerator } from './projenrc';
 const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
-  name: 'pulumi-serverless-connectors',
+  name: 'pulumi-aws-connectors',
   projenrcTs: true,
   release: false,
   entrypoint: 'src/index.ts',
