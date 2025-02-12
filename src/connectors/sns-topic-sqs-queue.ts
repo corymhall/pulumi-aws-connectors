@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface SNSTopicToSQSQueueConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.sns.Topic;
 
+  /**
+   * The target resource.
+   */
   target: aws.sqs.Queue;
-
 }
 
+/**
+ * Connect a SNS Topic to a SQS Queue.
+ */
 export class SNSTopicToSQSQueueConnector extends pulumi.ComponentResource {
   constructor(name: string, args: SNSTopicToSQSQueueConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:SNSTopicToSQSQueueConnector', name, args, opts);
@@ -36,7 +44,7 @@ export class SNSTopicToSQSQueueConnector extends pulumi.ComponentResource {
           },
         ],
       }
-    });
+    }, opts);
     this.registerOutputs({});
   }
 }

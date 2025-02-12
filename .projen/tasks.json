@@ -71,6 +71,17 @@
       "steps": [
         {
           "exec": "ts-node --project tsconfig.dev.json .projenrc.ts"
+        },
+        {
+          "spawn": "docs"
+        }
+      ]
+    },
+    "docs": {
+      "name": "docs",
+      "steps": [
+        {
+          "exec": "npx ts-node ./projenrc/markdown.ts"
         }
       ]
     },

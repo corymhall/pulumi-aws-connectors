@@ -1,18 +1,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export interface Policy {
-  Statement: {
-    Effect: string;
-    Action: string | string[];
-    Resource: string | string[];
-    Principal?: { Service: string };
-    Condition?: {
-      ArnEquals: {
-        'aws:SourceArn': string;
-      };
+export interface PolicyStatement {
+  Effect: string;
+  Action: string | string[];
+  Resource: string | string[];
+  Principal?: { Service: string };
+  Condition?: {
+    ArnEquals: {
+      'aws:SourceArn': string;
     };
-  }[];
+  };
+}
+export interface Policy {
+  Statement: PolicyStatement[];
 }
 
 export interface LambdaPermission {

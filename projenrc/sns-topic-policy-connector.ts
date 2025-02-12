@@ -12,6 +12,7 @@ export function generateSnsTopicPolicyConnector(
   info: IConnectorInfo,
 ) {
   const componentName = `${info.componentName}Connector`;
+  const description = `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`;
   new SnsTopicPolicyCode(
     project,
     `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
@@ -22,6 +23,11 @@ export function generateSnsTopicPolicyConnector(
       ...info,
     },
   );
+  return {
+    componentName,
+    description,
+    link: `[aws.sns.TopicPolicy](https://www.pulumi.com/docs/reference/pkg/aws/sns/topicpolicy/)`,
+  };
 }
 
 export class SnsTopicPolicyCode extends Code {
@@ -45,7 +51,7 @@ export class SnsTopicPolicyCode extends Code {
 
     this.close('],');
     this.close('}');
-    this.close('});');
+    this.close('}, opts);');
 
     this.closeCode();
   }

@@ -5,55 +5,32 @@ import { IConnectorInfo } from './types';
 
 export interface IamPolicyCodeInfo extends CodeInfo {
   sourcePolicy: boolean;
-  access: 'Read' | 'Write' | 'ReadWrite';
-  statement?: Policy;
+  readStatement?: Policy;
+  writeStatement?: Policy;
 }
 
 export function generateIamPolicyConnector(
   project: Project,
   info: IConnectorInfo,
 ) {
-  const componentName = `${info.componentName}ConnectorReadWrite`;
-  if (info.readStatement && info.writeStatement) {
-    new IamPolicyCode(
-      project,
-      `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}-ReadWrite.ts`.toLowerCase(),
-      componentName,
-      {
-        access: 'ReadWrite',
-        componentNamePrefix: info.componentName,
-        statement: info.readStatement,
-        ...info,
-      },
-    );
-  } else {
-    if (info.readStatement) {
-      new IamPolicyCode(
-        project,
-        `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}-Read.ts`.toLowerCase(),
-        componentName,
-        {
-          access: 'Read',
-          componentNamePrefix: info.componentName,
-          statement: info.readStatement,
-          ...info,
-        },
-      );
-    }
-    if (info.writeStatement) {
-      new IamPolicyCode(
-        project,
-        `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}-Write.ts`.toLowerCase(),
-        componentName,
-        {
-          access: 'Write',
-          statement: info.writeStatement,
-          componentNamePrefix: info.componentName,
-          ...info,
-        },
-      );
-    }
-  }
+  const componentName = `${info.componentName}Connector`;
+  const description = `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`;
+  new IamPolicyCode(
+    project,
+    `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
+    componentName,
+    {
+      componentNamePrefix: info.componentName,
+      readStatement: info.readStatement,
+      writeStatement: info.writeStatement,
+      ...info,
+    },
+  );
+  return {
+    componentName,
+    description,
+    link: `[aws.iam.RolePolicy](https://www.pulumi.com/docs/reference/pkg/aws/iam/rolepolicy/)`,
+  };
 }
 
 export class IamPolicyCode extends Code {
@@ -63,7 +40,65 @@ export class IamPolicyCode extends Code {
     componentName: string,
     info: IamPolicyCodeInfo,
   ) {
-    super(project, filePath, componentName, info);
+    const additionalArgs =
+      info.readStatement && info.writeStatement
+        ? [
+            '',
+            '/**',
+            ' * The access level for the policy.',
+            ' *',
+            ' * @default Access.READ',
+            ' */',
+            'access?: Access;',
+          ]
+        : undefined;
+    super(
+      project,
+      filePath,
+      componentName,
+      {
+        ...info,
+        accessLevel: info.readStatement && info.writeStatement ? true : false,
+      },
+      additionalArgs,
+    );
+
+    if (info.readStatement && info.writeStatement) {
+      this.line('const access = args.access ?? Access.READ;');
+      this.line();
+      this.line('const readPolicies: aws.iam.PolicyStatement[] = [];');
+      this.line('const writePolicies: aws.iam.PolicyStatement[] = [];');
+      this.open('readPolicies.push(');
+      this.writePolicy(this, info, info.readStatement);
+      this.close(');');
+      this.open('writePolicies.push(');
+      this.writePolicy(this, info, info.writeStatement);
+      this.close(');');
+    }
+
+    this.line('const statements: aws.iam.PolicyStatement[] = [];');
+    if (info.readStatement && !info.writeStatement) {
+      this.open('statements.push(');
+      this.writePolicy(this, info, info.readStatement);
+      this.close(');');
+    }
+    if (!info.readStatement && info.writeStatement) {
+      this.open('statements.push(');
+      this.writePolicy(this, info, info.writeStatement);
+      this.close(');');
+    }
+    if (info.readStatement && info.writeStatement) {
+      this.open(
+        'if (access === Access.READ || access === Access.READ_WRITE) {',
+      );
+      this.line('statements.push(...readPolicies);');
+      this.close('}');
+      this.open(
+        'if (access === Access.WRITE || access === Access.READ_WRITE) {',
+      );
+      this.line('statements.push(...writePolicies);');
+      this.close('}');
+    }
 
     this.open('new aws.iam.RolePolicy(`${name}-policy`, {');
     if (info.sourcePolicy) {
@@ -78,14 +113,9 @@ export class IamPolicyCode extends Code {
 
     this.open('policy: {');
     this.line("Version: '2012-10-17',");
-    this.open('Statement: [');
-    if (info.statement) {
-      this.writePolicy(this, info, info.statement);
-    }
-
-    this.close('],');
+    this.line('Statement: statements,');
     this.close('}');
-    this.close('});');
+    this.close('}, opts);');
 
     this.closeCode();
   }

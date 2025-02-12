@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface AppSyncGraphQLApiToLambdaFunctionConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.appsync.GraphQLApi;
 
+  /**
+   * The target resource.
+   */
   target: aws.lambda.Function;
-
 }
 
+/**
+ * Connect a AppSync GraphQLApi to a Lambda Function.
+ */
 export class AppSyncGraphQLApiToLambdaFunctionConnector extends pulumi.ComponentResource {
   constructor(name: string, args: AppSyncGraphQLApiToLambdaFunctionConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:AppSyncGraphQLApiToLambdaFunctionConnector', name, args, opts);
@@ -17,8 +25,8 @@ export class AppSyncGraphQLApiToLambdaFunctionConnector extends pulumi.Component
       action: 'lambda:InvokeFunction',
       function: args.target.name,
       principal: 'appsync.amazonaws.com',
-      sourceArn: pulumi.interpolate`arn:${aws.getPartitionOutput().partition}:appsync:${aws.getRegionOutput().name}:${aws.getCallerIdentityOutput().accountId}:apis/${args.source.id}`,
-    });
+      sourceArn: pulumi.interpolate`arn:${aws.getPartitionOutput({}, opts).partition}:appsync:${aws.getRegionOutput({}, opts).name}:${aws.getCallerIdentityOutput({}, opts).accountId}:apis/${args.source.id}`,
+    }, opts);
     this.registerOutputs({});
   }
 }

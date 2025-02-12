@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface S3BucketToLambdaFunctionConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.s3.Bucket;
 
+  /**
+   * The target resource.
+   */
   target: aws.lambda.Function;
-
 }
 
+/**
+ * Connect a S3 Bucket to a Lambda Function.
+ */
 export class S3BucketToLambdaFunctionConnector extends pulumi.ComponentResource {
   constructor(name: string, args: S3BucketToLambdaFunctionConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:S3BucketToLambdaFunctionConnector', name, args, opts);
@@ -18,8 +26,8 @@ export class S3BucketToLambdaFunctionConnector extends pulumi.ComponentResource 
       function: args.target.name,
       principal: 's3.amazonaws.com',
       sourceArn: pulumi.interpolate`${args.source.arn}`,
-      sourceAccount: `${aws.getCallerIdentityOutput().accountId}`,
-    });
+      sourceAccount: `${aws.getCallerIdentityOutput({}, opts).accountId}`,
+    }, opts);
     this.registerOutputs({});
   }
 }

@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface EventsRuleToLambdaFunctionConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.cloudwatch.EventRule;
 
+  /**
+   * The target resource.
+   */
   target: aws.lambda.Function;
-
 }
 
+/**
+ * Connect a Events Rule to a Lambda Function.
+ */
 export class EventsRuleToLambdaFunctionConnector extends pulumi.ComponentResource {
   constructor(name: string, args: EventsRuleToLambdaFunctionConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:EventsRuleToLambdaFunctionConnector', name, args, opts);
@@ -18,7 +26,7 @@ export class EventsRuleToLambdaFunctionConnector extends pulumi.ComponentResourc
       function: args.target.name,
       principal: 'events.amazonaws.com',
       sourceArn: pulumi.interpolate`${args.source.arn}`,
-    });
+    }, opts);
     this.registerOutputs({});
   }
 }

@@ -7,6 +7,7 @@ export interface CodeInfo {
   destModule: string;
   destResource: string;
   componentNamePrefix: string;
+  accessLevel?: boolean;
 }
 
 export class Code extends SourceCode {
@@ -23,20 +24,33 @@ export class Code extends SourceCode {
     }
     this.line(`import * as aws from '@pulumi/aws';`);
     this.line(`import * as pulumi from '@pulumi/pulumi';`);
+    if (info.accessLevel) {
+      this.line(`import { Access } from '../access';`);
+    }
     this.line();
     this.open(`export interface ${componentName}Args {`);
+    this.line('/**');
+    this.line(' * The source resource.');
+    this.line(' */');
     this.line(
       this.getArgLine('source', info.sourceModule, info.sourceResource),
     );
     this.line();
+    this.line('/**');
+    this.line(' * The target resource.');
+    this.line(' */');
     this.line(this.getArgLine('target', info.destModule, info.destResource));
-    this.line();
     if (additionalArgs) {
       additionalArgs.forEach((arg) => this.line(arg));
     }
     this.close('}');
     this.line();
 
+    this.line('/**');
+    this.line(
+      ` * Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`,
+    );
+    this.line(' */');
     this.open(
       `export class ${componentName} extends pulumi.ComponentResource {`,
     );
@@ -104,9 +118,12 @@ export class Code extends SourceCode {
         }
         return `\${${this.getInterpolateString(info, type, attr)}}`;
       })
-      .replace('AWS::AccountId', 'aws.getCallerIdentityOutput().accountId')
-      .replace('AWS::Region', 'aws.getRegionOutput().name')
-      .replace('AWS::Partition', 'aws.getPartitionOutput().partition');
+      .replace(
+        'AWS::AccountId',
+        'aws.getCallerIdentityOutput({}, opts).accountId',
+      )
+      .replace('AWS::Region', 'aws.getRegionOutput({}, opts).name')
+      .replace('AWS::Partition', 'aws.getPartitionOutput({}, opts).partition');
   }
   protected getInterpolateString(
     info: CodeInfo,

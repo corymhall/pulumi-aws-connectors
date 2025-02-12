@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface EventsRuleToSQSQueueConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.cloudwatch.EventRule;
 
+  /**
+   * The target resource.
+   */
   target: aws.sqs.Queue;
-
 }
 
+/**
+ * Connect a Events Rule to a SQS Queue.
+ */
 export class EventsRuleToSQSQueueConnector extends pulumi.ComponentResource {
   constructor(name: string, args: EventsRuleToSQSQueueConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:EventsRuleToSQSQueueConnector', name, args, opts);
@@ -36,7 +44,7 @@ export class EventsRuleToSQSQueueConnector extends pulumi.ComponentResource {
           },
         ],
       }
-    });
+    }, opts);
     this.registerOutputs({});
   }
 }

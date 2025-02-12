@@ -51,6 +51,10 @@ jestConfig?.patch(
   }),
 );
 
+project.defaultTask?.spawn(
+  project.addTask('docs', { exec: 'npx ts-node ./projenrc/markdown.ts' }),
+);
+
 new ProfilesGenerator(project, 'generator');
 
 project.synth();

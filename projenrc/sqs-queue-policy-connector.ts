@@ -22,6 +22,11 @@ export function generateSqsQueuePolicyConnector(
       ...info,
     },
   );
+  return {
+    componentName,
+    description: `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`,
+    link: `[aws.sqs.QueuePolicy](https://www.pulumi.com/docs/reference/pkg/aws/sqs/queuepolicy/)`,
+  };
 }
 
 export class SqsQueuePolicyCode extends Code {
@@ -45,7 +50,7 @@ export class SqsQueuePolicyCode extends Code {
 
     this.close('],');
     this.close('}');
-    this.close('});');
+    this.close('}, opts);');
 
     this.closeCode();
   }

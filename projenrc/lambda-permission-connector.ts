@@ -1,5 +1,6 @@
 import { Project } from 'projen';
 import { Code, CodeInfo } from './code';
+import { MarkdownEntry } from './markdown';
 import { LambdaPermission } from './profiles';
 import { IConnectorInfo } from './types';
 
@@ -10,7 +11,7 @@ export interface LambdaPermissionPolicyCodeInfo extends CodeInfo {
 export function generateLambdaPermissionPolicyConnector(
   project: Project,
   info: IConnectorInfo,
-) {
+): MarkdownEntry {
   const componentName = `${info.componentName}Connector`;
   new LambdaPermissionPolicyCode(
     project,
@@ -22,6 +23,11 @@ export function generateLambdaPermissionPolicyConnector(
       ...info,
     },
   );
+  return {
+    componentName,
+    description: `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`,
+    link: `[aws.lambda.Permission](https://www.pulumi.com/docs/reference/pkg/aws/lambda/permission/)`,
+  };
 }
 
 export class LambdaPermissionPolicyCode extends Code {
@@ -33,7 +39,17 @@ export class LambdaPermissionPolicyCode extends Code {
   ) {
     const hasQualifier = info.permission.SourceArn.includes('Source.Qualifier');
     const additionalArgs = hasQualifier
-      ? ['sourceQualifier: string;']
+      ? [
+          '',
+          '/**',
+          ' * A qualifier for the source resource that narrows its scope.',
+          ' * For an example, a sourceQualifier of "prod/GET/hello" would allow only that route',
+          ' * to invoke the Lambda Function.',
+          ' *',
+          " * @default '*' (all routes)",
+          ' */',
+          'sourceQualifier: string;',
+        ]
       : undefined;
     super(project, filePath, componentName, info, additionalArgs);
 
@@ -57,7 +73,7 @@ export class LambdaPermissionPolicyCode extends Code {
       this.line(`sourceAccount: \`${sourceAccount}\`,`);
     }
 
-    this.close('});');
+    this.close('}, opts);');
 
     this.closeCode();
   }

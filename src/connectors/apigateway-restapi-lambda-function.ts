@@ -3,13 +3,29 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface ApiGatewayRestApiToLambdaFunctionConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.apigateway.RestApi;
 
+  /**
+   * The target resource.
+   */
   target: aws.lambda.Function;
 
+  /**
+   * A qualifier for the source resource that narrows its scope.
+   * For an example, a sourceQualifier of "prod/GET/hello" would allow only that route
+   * to invoke the Lambda Function.
+   *
+   * @default '*' (all routes)
+   */
   sourceQualifier: string;
 }
 
+/**
+ * Connect a ApiGateway RestApi to a Lambda Function.
+ */
 export class ApiGatewayRestApiToLambdaFunctionConnector extends pulumi.ComponentResource {
   constructor(name: string, args: ApiGatewayRestApiToLambdaFunctionConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:ApiGatewayRestApiToLambdaFunctionConnector', name, args, opts);
@@ -20,8 +36,8 @@ export class ApiGatewayRestApiToLambdaFunctionConnector extends pulumi.Component
       action: 'lambda:InvokeFunction',
       function: args.target.name,
       principal: 'apigateway.amazonaws.com',
-      sourceArn: pulumi.interpolate`arn:${aws.getPartitionOutput().partition}:execute-api:${aws.getRegionOutput().name}:${aws.getCallerIdentityOutput().accountId}:${args.source.id}/${qualifier}`,
-    });
+      sourceArn: pulumi.interpolate`arn:${aws.getPartitionOutput({}, opts).partition}:execute-api:${aws.getRegionOutput({}, opts).name}:${aws.getCallerIdentityOutput({}, opts).accountId}:${args.source.id}/${qualifier}`,
+    }, opts);
     this.registerOutputs({});
   }
 }

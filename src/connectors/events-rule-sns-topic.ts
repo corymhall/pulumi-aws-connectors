@@ -3,12 +3,20 @@ import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 export interface EventsRuleToSNSTopicConnectorArgs {
+  /**
+   * The source resource.
+   */
   source: aws.cloudwatch.EventRule;
 
+  /**
+   * The target resource.
+   */
   target: aws.sns.Topic;
-
 }
 
+/**
+ * Connect a Events Rule to a SNS Topic.
+ */
 export class EventsRuleToSNSTopicConnector extends pulumi.ComponentResource {
   constructor(name: string, args: EventsRuleToSNSTopicConnectorArgs, opts?: pulumi.ComponentResourceOptions) {
     super('aws-connectors:index:EventsRuleToSNSTopicConnector', name, args, opts);
@@ -36,7 +44,7 @@ export class EventsRuleToSNSTopicConnector extends pulumi.ComponentResource {
           },
         ],
       }
-    });
+    }, opts);
     this.registerOutputs({});
   }
 }
