@@ -12,7 +12,7 @@ export interface LambdaFunctionToS3BucketArgs {
   /**
    * The target resource.
    */
-  target: aws.s3.Bucket;
+  target: aws.s3.BucketV2;
 
   /**
    * The access level for the policy.
