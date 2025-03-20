@@ -1,6 +1,10 @@
 {
   "dependencies": [
     {
+      "name": "@hallcor/pulumi-projen-project-types",
+      "type": "build"
+    },
+    {
       "name": "@swc/core",
       "type": "build"
     },
@@ -24,6 +28,11 @@
     {
       "name": "@typescript-eslint/parser",
       "version": "^8",
+      "type": "build"
+    },
+    {
+      "name": "commit-and-tag-version",
+      "version": "^12",
       "type": "build"
     },
     {
@@ -91,11 +100,6 @@
     },
     {
       "name": "@pulumi/pulumi",
-      "type": "runtime"
-    },
-    {
-      "name": "pulumi-ts-provider",
-      "version": "https://gitpkg.vercel.app/mikhailshilkov/comp-as-comp/ts/pulumi-ts-provider?20621b672151ec13b7c384d570e713f765cc83ca",
       "type": "runtime"
     }
   ],

@@ -11,11 +11,11 @@ export function generateSnsTopicPolicyConnector(
   project: Project,
   info: IConnectorInfo,
 ) {
-  const componentName = `${info.componentName}Connector`;
+  const componentName = info.componentName;
   const description = `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`;
   new SnsTopicPolicyCode(
     project,
-    `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
+    `src/generated/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
     componentName,
     {
       componentNamePrefix: info.componentName,
@@ -51,7 +51,7 @@ export class SnsTopicPolicyCode extends Code {
 
     this.close('],');
     this.close('}');
-    this.close('}, opts);');
+    this.close('}, { parent: this });');
 
     this.closeCode();
   }

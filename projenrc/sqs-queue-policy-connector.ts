@@ -11,10 +11,10 @@ export function generateSqsQueuePolicyConnector(
   project: Project,
   info: IConnectorInfo,
 ) {
-  const componentName = `${info.componentName}Connector`;
+  const componentName = info.componentName;
   new SqsQueuePolicyCode(
     project,
-    `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
+    `src/generated/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
     componentName,
     {
       componentNamePrefix: info.componentName,
@@ -50,7 +50,7 @@ export class SqsQueuePolicyCode extends Code {
 
     this.close('],');
     this.close('}');
-    this.close('}, opts);');
+    this.close('}, { parent: this });');
 
     this.closeCode();
   }

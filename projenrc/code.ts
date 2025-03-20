@@ -120,10 +120,13 @@ export class Code extends SourceCode {
       })
       .replace(
         'AWS::AccountId',
-        'aws.getCallerIdentityOutput({}, opts).accountId',
+        'aws.getCallerIdentityOutput({}, { parent: this }).accountId',
       )
-      .replace('AWS::Region', 'aws.getRegionOutput({}, opts).name')
-      .replace('AWS::Partition', 'aws.getPartitionOutput({}, opts).partition');
+      .replace('AWS::Region', 'aws.getRegionOutput({}, { parent: this }).name')
+      .replace(
+        'AWS::Partition',
+        'aws.getPartitionOutput({}, { parent: this }).partition',
+      );
   }
   protected getInterpolateString(
     info: CodeInfo,

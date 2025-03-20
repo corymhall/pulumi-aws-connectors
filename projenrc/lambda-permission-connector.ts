@@ -12,10 +12,10 @@ export function generateLambdaPermissionPolicyConnector(
   project: Project,
   info: IConnectorInfo,
 ): MarkdownEntry {
-  const componentName = `${info.componentName}Connector`;
+  const componentName = info.componentName;
   new LambdaPermissionPolicyCode(
     project,
-    `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
+    `src/generated/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
     componentName,
     {
       componentNamePrefix: info.componentName,
@@ -73,7 +73,7 @@ export class LambdaPermissionPolicyCode extends Code {
       this.line(`sourceAccount: \`${sourceAccount}\`,`);
     }
 
-    this.close('}, opts);');
+    this.close('}, { parent: this });');
 
     this.closeCode();
   }
