@@ -1,0 +1,10 @@
+name: lambda-s3
+description: A minimal AWS Connector example
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+plugins:
+  providers:
+    - name: aws-connectors
+      path: ../../
