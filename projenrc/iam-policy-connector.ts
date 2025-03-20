@@ -13,11 +13,11 @@ export function generateIamPolicyConnector(
   project: Project,
   info: IConnectorInfo,
 ) {
-  const componentName = `${info.componentName}Connector`;
+  const componentName = info.componentName;
   const description = `Connect a ${info.sourceModule} ${info.sourceResource} to a ${info.destModule} ${info.destResource}.`;
   new IamPolicyCode(
     project,
-    `src/connectors/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
+    `src/generated/${info.sourceModule}-${info.sourceResource}-${info.destModule}-${info.destResource}.ts`.toLowerCase(),
     componentName,
     {
       componentNamePrefix: info.componentName,
@@ -46,10 +46,11 @@ export class IamPolicyCode extends Code {
             '',
             '/**',
             ' * The access level for the policy.',
+            ' * Can be one of "Read", "Write", or "ReadWrite"',
             ' *',
-            ' * @default Access.READ',
+            ' * @default "Read"',
             ' */',
-            'access?: Access;',
+            'access?: string;',
           ]
         : undefined;
     super(
@@ -115,7 +116,7 @@ export class IamPolicyCode extends Code {
     this.line("Version: '2012-10-17',");
     this.line('Statement: statements,');
     this.close('}');
-    this.close('}, opts);');
+    this.close('}, { parent: this });');
 
     this.closeCode();
   }

@@ -1,5 +1,7 @@
 import * as path from 'path';
-import { componentProviderHost } from 'pulumi-ts-provider';
+import { componentProviderHost } from '@pulumi/pulumi/provider/experimental';
 
-void componentProviderHost(path.join(__dirname, '../'));
-
+componentProviderHost(path.join(__dirname, '../')).catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
