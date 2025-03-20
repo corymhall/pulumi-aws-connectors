@@ -32,6 +32,8 @@ const project = new TypeScriptComponent({
     }),
   }),
 
+  gitignore: ['examples/**/sdks', 'examples/**/package-lock.json'],
+
   deps: ['@pulumi/pulumi', '@pulumi/aws-native', '@pulumi/aws'],
   devDeps: ['@swc/core', '@swc/jest', '@hallcor/pulumi-projen-project-types'],
   // deps: [],                /* Runtime dependencies of this module. */

@@ -31,6 +31,8 @@ jspm_packages/
 *.tgz
 .yarn-integrity
 .cache
+examples/**/sdks
+examples/**/package-lock.json
 /test-reports/
 junit.xml
 !/jest.config.json
