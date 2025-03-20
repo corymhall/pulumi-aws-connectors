@@ -4,6 +4,9 @@ This is a Pulumi Component Library for connecting one AWS resource to another
 through simple well-scoped permissions.
 This is based on [AWS SAM Connectors](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/managing-permissions-connectors.html).
 
+> This project was created with [@hallcor/pulumi-projen-project-types](https://github.com/corymhall/pulumi-projen-project-types)
+> You can create your own with `npx projen new --from @hallcor/pulumi-projen-project-types type_script_project`
+
 ## Getting Started
 
 To add this component to your Pulumi app run `pulumi package add`

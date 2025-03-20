@@ -170,6 +170,8 @@ export class Code extends SourceCode {
         return `${typ}: aws.cloudwatch.EventRule;`;
       case 'EventBus':
         return `${typ}: aws.cloudwatch.EventBus;`;
+      case 'Bucket':
+        return `${typ}: aws.s3.BucketV2;`;
       default:
         return `${typ}: aws.${module.toLowerCase()}.${resourceType};`;
     }

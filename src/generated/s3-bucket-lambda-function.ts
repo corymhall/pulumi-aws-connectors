@@ -6,7 +6,7 @@ export interface S3BucketToLambdaFunctionArgs {
   /**
    * The source resource.
    */
-  source: aws.s3.Bucket;
+  source: aws.s3.BucketV2;
 
   /**
    * The target resource.
