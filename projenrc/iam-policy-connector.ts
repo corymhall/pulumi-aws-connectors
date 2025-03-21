@@ -62,6 +62,7 @@ export class IamPolicyCode extends Code {
         accessLevel: info.readStatement && info.writeStatement ? true : false,
       },
       additionalArgs,
+      ["import { roleNameFromArn } from '../utils';"],
     );
 
     if (info.readStatement && info.writeStatement) {
@@ -104,11 +105,11 @@ export class IamPolicyCode extends Code {
     this.open('new aws.iam.RolePolicy(`${name}-policy`, {');
     if (info.sourcePolicy) {
       this.line(
-        `role: args.source.${this.getRoleAttribute(info.sourceResource)},`,
+        `role: roleNameFromArn(args.source.${this.getRoleAttribute(info.sourceResource)}),`,
       );
     } else {
       this.line(
-        `role: args.target.${this.getRoleAttribute(info.destResource)},`,
+        `role: roleNameFromArn(args.target.${this.getRoleAttribute(info.destResource)}),`,
       );
     }
 
