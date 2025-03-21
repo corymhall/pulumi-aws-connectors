@@ -2,6 +2,7 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 import { Access } from '../access';
+import { roleNameFromArn } from '../utils';
 
 export interface SfnStateMachineToSfnStateMachineArgs {
   /**
@@ -91,7 +92,7 @@ export class SfnStateMachineToSfnStateMachine extends pulumi.ComponentResource {
       statements.push(...writePolicies);
     }
     new aws.iam.RolePolicy(`${name}-policy`, {
-      role: args.source.roleArn,
+      role: roleNameFromArn(args.source.roleArn),
       policy: {
         Version: '2012-10-17',
         Statement: statements,

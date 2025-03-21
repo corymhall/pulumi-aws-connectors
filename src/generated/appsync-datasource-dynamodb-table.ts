@@ -2,6 +2,7 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 import { Access } from '../access';
+import { roleNameFromArn } from '../utils';
 
 export interface AppSyncDataSourceToDynamoDBTableArgs {
   /**
@@ -76,7 +77,7 @@ export class AppSyncDataSourceToDynamoDBTable extends pulumi.ComponentResource {
       statements.push(...writePolicies);
     }
     new aws.iam.RolePolicy(`${name}-policy`, {
-      role: args.source.serviceRoleArn.apply(arn => arn!),
+      role: roleNameFromArn(args.source.serviceRoleArn.apply(arn => arn!)),
       policy: {
         Version: '2012-10-17',
         Statement: statements,

@@ -17,6 +17,7 @@ export class Code extends SourceCode {
     componentName: string,
     info: CodeInfo,
     additionalArgs?: string[],
+    additionalImports?: string[],
   ) {
     super(project, filePath);
     if (this.marker) {
@@ -26,6 +27,9 @@ export class Code extends SourceCode {
     this.line(`import * as pulumi from '@pulumi/pulumi';`);
     if (info.accessLevel) {
       this.line(`import { Access } from '../access';`);
+    }
+    if (additionalImports) {
+      additionalImports.forEach((imp) => this.line(imp));
     }
     this.line();
     this.open(`export interface ${componentName}Args {`);
