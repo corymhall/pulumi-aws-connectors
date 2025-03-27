@@ -31,6 +31,7 @@
     "src/generated/events-rule-sns-topic.ts",
     "src/generated/events-rule-sqs-queue.ts",
     "src/generated/events-rule-stepfunctions-statemachine.ts",
+    "src/generated/index.ts",
     "src/generated/lambda-function-dynamodb-table.ts",
     "src/generated/lambda-function-events-eventbus.ts",
     "src/generated/lambda-function-lambda-function.ts",

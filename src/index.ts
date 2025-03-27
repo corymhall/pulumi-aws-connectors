@@ -1,9 +1,20 @@
-import * as path from 'path';
-import { componentProviderHost } from '@pulumi/pulumi/provider/experimental';
+import { join } from 'path';
+import {
+  componentProviderHost,
+  // getPulumiComponents,
+} from '@pulumi/pulumi/provider/experimental';
 // TODO: https://github.com/pulumi/pulumi/issues/18973
+import { ApiGatewayRestApiToLambdaFunction } from './generated';
 import '@pulumi/aws';
 
-componentProviderHost(path.join(__dirname, '../')).catch((err) => {
-  console.error(err);
+// // eslint-disable-next-line @typescript-eslint/no-require-imports
+// const components = getPulumiComponents(require('./generated'));
+componentProviderHost({
+  components: [ApiGatewayRestApiToLambdaFunction],
+  name: 'aws-connectors',
+  dirname: join(__dirname, '..'),
+  namespace: 'hallcor',
+}).catch((e) => {
+  console.error(e);
   process.exit(1);
 });

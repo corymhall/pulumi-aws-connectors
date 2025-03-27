@@ -11,7 +11,7 @@ import { ProfilesGenerator } from './projenrc';
 
 const project = new TypeScriptComponent({
   defaultReleaseBranch: 'main',
-  name: 'aws-connectors',
+  name: '@hallcor/aws-connectors',
   projenrcTs: true,
   packageManager: NodePackageManager.NPM,
   depsUpgradeOptions: {

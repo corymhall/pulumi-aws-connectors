@@ -7,13 +7,13 @@
         "typescript": "^5.0.0"
     },
     "scripts": {
-        "add:default": "pulumi package add ../../",
+        "add:default": "pulumi package add ../../../",
         "add:builder": "pulumi package add https://github.com/corymhall/pulumi-lambda-builders",
         "add:all": "npm run add:default && npm run add:builder",
         "postinstall": "npm run add:all"
     },
     "dependencies": {
         "@pulumi/aws": "^6.71.0",
-        "@pulumi/pulumi": "^3.157.0"
+        "@pulumi/pulumi": "^3.159.0"
     }
 }

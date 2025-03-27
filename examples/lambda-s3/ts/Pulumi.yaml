@@ -7,4 +7,4 @@ runtime:
 plugins:
   providers:
     - name: aws-connectors
-      path: ../../
+      path: ../../../
