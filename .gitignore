@@ -31,7 +31,6 @@ jspm_packages/
 *.tgz
 .yarn-integrity
 .cache
-examples/**/sdks
 examples/**/package-lock.json
 /test-reports/
 junit.xml
@@ -85,4 +84,5 @@ junit.xml
 !/src/generated/appsync-graphqlapi-lambda-function.ts
 !/src/generated/index.ts
 /profiles.md
+examples/**/sdks
 !/.projenrc.ts

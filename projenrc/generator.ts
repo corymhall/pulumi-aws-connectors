@@ -53,7 +53,7 @@ export class ProfilesGenerator extends Construct {
       }
     }
     new TextFile(this, 'src/generated/index.ts', {
-      lines: exports,
+      lines: exports.concat(['']),
     });
     new TextFile(this, 'profiles.md', {
       committed: false,

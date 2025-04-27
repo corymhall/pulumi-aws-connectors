@@ -6,14 +6,10 @@
         "esbuild": "^0.25.1",
         "typescript": "^5.0.0"
     },
-    "scripts": {
-        "add:default": "pulumi package add ../../../",
-        "add:builder": "pulumi package add https://github.com/corymhall/pulumi-lambda-builders",
-        "add:all": "npm run add:default && npm run add:builder",
-        "postinstall": "npm run add:all"
-    },
     "dependencies": {
+        "@hallcor/aws-connectors": "file:sdks/hallcor-aws-connectors",
+        "@hallcor/lambda-builders": "file:sdks/hallcor-lambda-builders",
         "@pulumi/aws": "^6.71.0",
-        "@pulumi/pulumi": "^3.159.0"
+        "@pulumi/pulumi": "^3.165.0"
     }
 }

@@ -47,5 +47,7 @@ project.defaultTask?.spawn(
 );
 
 new ProfilesGenerator(project, 'generator');
+project.addGitIgnore('examples/**/sdks');
+project.npmignore?.addPatterns('examples');
 
 project.synth();
