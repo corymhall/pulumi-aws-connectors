@@ -7,4 +7,7 @@ runtime:
 plugins:
   providers:
     - name: aws-connectors
-      path: ../../
+      path: ../../../
+packages:
+  aws-connectors: ../../../@0.0.0
+  lambda-builders: https://github.com/corymhall/pulumi-lambda-builders@0.1.10

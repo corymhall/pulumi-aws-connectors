@@ -35,6 +35,7 @@
 /src/generated/events-rule-sns-topic.ts linguist-generated
 /src/generated/events-rule-sqs-queue.ts linguist-generated
 /src/generated/events-rule-stepfunctions-statemachine.ts linguist-generated
+/src/generated/index.ts linguist-generated
 /src/generated/lambda-function-dynamodb-table.ts linguist-generated
 /src/generated/lambda-function-events-eventbus.ts linguist-generated
 /src/generated/lambda-function-lambda-function.ts linguist-generated

@@ -31,13 +31,15 @@ jspm_packages/
 *.tgz
 .yarn-integrity
 .cache
-examples/**/sdks
 examples/**/package-lock.json
 /test-reports/
 junit.xml
 !/jest.config.json
 /coverage/
 !/.github/workflows/build.yml
+/dist/changelog.md
+/dist/version.txt
+!/.github/workflows/release.yml
 !/.mergify.yml
 !/.github/workflows/upgrade-main.yml
 !/.github/pull_request_template.md
@@ -51,10 +53,6 @@ junit.xml
 /dist/
 !/.eslintrc.json
 !/PulumiPlugin.yaml
-/dist/changelog.md
-/dist/version.txt
-!/.github/workflows/release.yml
-dist
 !/src/generated/events-rule-sns-topic.ts
 !/src/generated/events-rule-events-eventbus.ts
 !/src/generated/events-rule-stepfunctions-statemachine.ts
@@ -84,5 +82,7 @@ dist
 !/src/generated/appsync-datasource-lambda-function.ts
 !/src/generated/appsync-datasource-events-eventbus.ts
 !/src/generated/appsync-graphqlapi-lambda-function.ts
+!/src/generated/index.ts
 /profiles.md
+examples/**/sdks
 !/.projenrc.ts

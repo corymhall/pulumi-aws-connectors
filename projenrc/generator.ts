@@ -21,6 +21,7 @@ export class ProfilesGenerator extends Construct {
 
     this.profiles = parseProfiles();
     const markdownEntries: MarkdownEntry[] = [];
+    const exports: string[] = [];
 
     for (const [sourceType, sourceConfig] of Object.entries(
       this.profiles.Permissions,
@@ -48,8 +49,12 @@ export class ProfilesGenerator extends Construct {
         if (connectorInfo.markdownEntry) {
           markdownEntries.push(connectorInfo.markdownEntry);
         }
+        exports.push(`export * from './${connectorInfo.fileImport}';`);
       }
     }
+    new TextFile(this, 'src/generated/index.ts', {
+      lines: exports.concat(['']),
+    });
     new TextFile(this, 'profiles.md', {
       committed: false,
       lines: [
@@ -88,6 +93,7 @@ export class ConnectorInfo extends Construct implements IConnectorInfo {
   public lambdaPermission?: LambdaPermission;
   public sourcePolicy: boolean;
   public markdownEntry?: MarkdownEntry;
+  public fileImport: string;
   private readonly project: Project;
   constructor(scope: Construct, id: string, props: ProfileGeneratorProps) {
     super(scope, id);
@@ -99,6 +105,8 @@ export class ConnectorInfo extends Construct implements IConnectorInfo {
     this.sourceResource = props.sourceType.split('::')[2];
     this.destModule = props.destinationType.split('::')[1];
     this.destResource = props.destinationType.split('::')[2];
+    this.fileImport =
+      `${this.sourceModule}-${this.sourceResource}-${this.destModule}-${this.destResource}`.toLowerCase();
     const ac = props.destinationConfig.Properties.AccessCategories;
 
     if ('Read' in ac) {
