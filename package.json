@@ -23,11 +23,11 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@hallcor/pulumi-projen-project-types": "^0.0.53",
+    "@hallcor/pulumi-projen-project-types": "^0.0.54",
     "@swc/core": "^1.13.3",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.17.1",
+    "@types/node": "^22.17.2",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "commit-and-tag-version": "^12",
@@ -47,8 +47,8 @@
   },
   "dependencies": {
     "@pulumi/aws": "^6.83.0",
-    "@pulumi/aws-native": "^1.31.0",
-    "@pulumi/pulumi": "^3.188.0"
+    "@pulumi/aws-native": "^1.32.0",
+    "@pulumi/pulumi": "^3.190.0"
   },
   "main": "src/index.ts",
   "license": "Apache-2.0",
