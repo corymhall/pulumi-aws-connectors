@@ -27,7 +27,7 @@
     "@swc/core": "^1.13.20",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.18.8",
+    "@types/node": "^22.18.10",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "commit-and-tag-version": "^12",
@@ -41,14 +41,14 @@
     "jest-junit": "^16",
     "prettier": "^3.6.2",
     "projen": "^0.96.5",
-    "ts-jest": "^29.4.4",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@pulumi/aws": "^6.83.0",
     "@pulumi/aws-native": "^1.36.0",
-    "@pulumi/pulumi": "^3.200.0"
+    "@pulumi/pulumi": "^3.202.0"
   },
   "main": "src/index.ts",
   "license": "Apache-2.0",
