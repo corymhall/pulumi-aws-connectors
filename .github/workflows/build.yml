@@ -54,19 +54,15 @@ jobs:
       id-token: write
     if: always() && needs.build.outputs.self_mutation_happened && !(github.event.pull_request.head.repo.full_name != github.repository)
     steps:
-      - name: Generate Pulumi Access Token
-        id: generate_pulumi_token
-        uses: pulumi/auth-actions@v1
-        with:
-          organization: corymhall
-          requested-token-type: urn:pulumi:token-type:access_token:personal
-          scope: user:corymhall
-          export-environment-variables: false
-      - uses: pulumi/esc-action@v1
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ steps.generate_pulumi_token.outputs.pulumi-access-token }}
+      - id: esc
+        uses: pulumi/esc-action@v1
         with:
           environment: github/public
+          export-environment-variables: false
+          oidc-auth: true
+          oidc-organization: corymhall
+          oidc-requested-token-type: urn:pulumi:token-type:access_token:personal
+          oidc-scope: user:corymhall
       - name: Generate token
         id: generate_token
         uses: actions/create-github-app-token@v1
@@ -88,8 +84,8 @@ jobs:
         run: '[ -s ${{ runner.temp }}/repo.patch ] && git apply ${{ runner.temp }}/repo.patch || echo "Empty patch. Skipping."'
       - name: Set git identity
         run: |-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Push changes
         env:
           PULL_REQUEST_REF: ${{ github.event.pull_request.head.ref }}
