@@ -2,7 +2,7 @@
 
 * text=auto eol=lf
 *.snap linguist-generated
-/.eslintrc.json linguist-generated
+/.eslintrc.json linguist-generated linguist-language=JSON-with-Comments
 /.gitattributes linguist-generated
 /.github/pull_request_template.md linguist-generated
 /.github/workflows/auto-approve.yml linguist-generated
@@ -54,5 +54,5 @@
 /src/generated/stepfunctions-statemachine-sns-topic.ts linguist-generated
 /src/generated/stepfunctions-statemachine-sqs-queue.ts linguist-generated
 /src/generated/stepfunctions-statemachine-stepfunctions-statemachine.ts linguist-generated
-/tsconfig.dev.json linguist-generated
-/tsconfig.json linguist-generated
+/tsconfig.dev.json linguist-generated linguist-language=JSON-with-Comments
+/tsconfig.json linguist-generated linguist-language=JSON-with-Comments
